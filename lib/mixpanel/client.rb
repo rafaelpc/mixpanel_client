@@ -13,7 +13,7 @@ module Mixpanel
     DATA_URI = 'https://data.mixpanel.com/api/2.0'
 
     attr_reader   :uri
-    attr_accessor :api_key, :api_secret, :parallel, :api_url
+    attr_accessor :api_key, :api_secret, :parallel, :api_url, :logger
 
     # Configure the client
     #
@@ -27,6 +27,7 @@ module Mixpanel
       @api_secret = config[:api_secret]
       @parallel = config[:parallel] || false
       @api_url = config[:api_url]
+      @logger = config[:logger]
     end
 
     # Return mixpanel data as a JSON object or CSV string
@@ -48,12 +49,14 @@ module Mixpanel
     # @return   [JSON, String] mixpanel response as a JSON object or CSV string
     def request(resource, options)
       @uri = request_uri(resource, options)
+      log("Request: #{@uri}")
       if @parallel
         parallel_request = prepare_parallel_request
         hydra.queue parallel_request
         parallel_request
       else
         response = URI.get(@uri)
+        log("Response: #{response}\n")
         response = %Q|[#{response.split("\n").join(',')}]| if resource == 'export'
         Utils.to_hash(response, @format)
       end
@@ -123,6 +126,10 @@ module Mixpanel
 
     def self.base_uri_for_resource(resource)
       resource == 'export' ? DATA_URI : BASE_URI
+    end
+
+    def log(message)
+      @logger.info(message) if @logger
     end
   end
 end
