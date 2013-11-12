@@ -13,7 +13,7 @@ module Mixpanel
     DATA_URI = 'https://data.mixpanel.com/api/2.0'
 
     attr_reader   :uri
-    attr_accessor :api_key, :api_secret, :parallel
+    attr_accessor :api_key, :api_secret, :parallel, :api_url
 
     # Configure the client
     #
@@ -21,11 +21,12 @@ module Mixpanel
     #   config = {'api_key' => '123', 'api_secret' => '456'}
     #   client = Mixpanel::Client.new(config)
     #
-    # @param [Hash] config consisting of an 'api_key' and an 'api_secret'
+    # @param [Hash] config consisting of an 'api_key' and 'api_secret'
     def initialize(config)
       @api_key    = config[:api_key]
       @api_secret = config[:api_secret]
       @parallel = config[:parallel] || false
+      @api_url = config[:api_url]
     end
 
     # Return mixpanel data as a JSON object or CSV string
@@ -77,7 +78,7 @@ module Mixpanel
     # @return   [JSON, String] mixpanel response as a JSON object or CSV string
     def request_uri(resource, options)
       @format = options[:format] || :json
-      URI.mixpanel(resource, normalize_options(options))
+      URI.mixpanel(resource, normalize_options(options), @api_url)
     end
 
     def prepare_parallel_request

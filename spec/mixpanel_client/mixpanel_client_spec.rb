@@ -18,6 +18,11 @@ describe Mixpanel::Client do
     it 'should be able to set a parallel option when passed' do
       Mixpanel::Client.new(:api_key => 'test_key', :api_secret => 'test_secret', :parallel => true).parallel.should == true
     end
+
+    it 'should be able to set the api_url option when passed' do
+      proxy_url = "http://example.com"
+      Mixpanel::Client.new(:api_key => 'test_key', :api_secret => 'test_secret', :api_url => proxy_url).api_url.should == proxy_url
+    end
   end
 
   context 'when making an invalid request' do

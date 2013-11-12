@@ -15,6 +15,11 @@ describe Mixpanel::URI do
       resource, params  = ['export', {:c => 'see', :a => 'ey'}]
       Mixpanel::URI.mixpanel(resource, params).should == "#{Mixpanel::Client::DATA_URI}/export?a=ey&c=see"
     end
+    it 'should return a uri based on the url passed as parameter' do
+      resource, params  = ['export', {:c => 'see', :a => 'ey'}]
+      proxy_url = 'http://example.com' 
+      Mixpanel::URI.mixpanel(resource, params, proxy_url).should == "#{proxy_url}/export?a=ey&c=see"
+    end
   end
 
   describe '.encode' do
